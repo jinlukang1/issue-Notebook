@@ -1,1 +1,1 @@
-The Scripy Used in dataset
+The Script Used in dataset
