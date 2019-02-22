@@ -50,14 +50,16 @@ class DvsCnet(nn.Module):
 									self.conv5_1, self.relu5_1, self.conv5_2, self.relu5_2, self.conv5_3, self.relu5_3, self.pool5
 									)
 
+		self.line1 = nn.Linear(512 * 7 * 7, 4096)
+		self.line2 = nn.Linear(4096, 4096)
+		self.line3 = nn.Linear(4096, num_classes)
 		self.classifier = nn.Sequential(
-			nn.Linear(512 * 7 * 7, 4096),
+			self.line1,
 			nn.ReLU(True),
 			nn.Dropout(),
-			nn.Linear(4096, 4096),
+			self.line2,
 			nn.ReLU(True),
-			nn.Dropout(),
-			nn.Linear(4096, num_classes),
+			nn.Dropout()
 		)
 
 		self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
@@ -68,6 +70,7 @@ class DvsCnet(nn.Module):
 		x = self.avgpool(x)
 		x = x.view(x.size(0), -1)
 		x = self.classifier(x)
+		x = self.line3(x)
 		return x
 
 

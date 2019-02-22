@@ -13,4 +13,4 @@ python trainnet.py \
         --train_load_path /ghome/jinlk/jinlukang/example/examples/fast_neural_style/trainDVSC/checkpoints/vgg16-397923af.pth \
         --train_lr 0.001
 
-        /
+        
