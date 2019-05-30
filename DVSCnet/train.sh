@@ -3,9 +3,9 @@ cd /ghome/jinlk/jinlukang/example/examples/fast_neural_style/trainDVSC && \
 python trainnet.py \
         --selection False \
         --dataroot /gdata/jinlk/jinlukang/example/DVSC/train/ \
-        --train_batch_size 4 \
+        --train_batch_size 32 \
         --train_shuffle True \
-        --train_num_workers 0 \
+        --train_num_workers 8 \
         --train_epoch 2 \
         --model_save_path /gdata/jinlk/jinlukang/example/DVSC/TrainedModel/ \
         --use_tensorboard False \

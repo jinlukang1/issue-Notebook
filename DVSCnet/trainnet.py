@@ -49,26 +49,33 @@ def mkdirs():
 	if not os.path.exists(args.model_save_path):
 		os.makedirs(args.model_save_path)
 
-def val_acc(model, dataloader, criterion):
+def val_acc(model, dataloader, criterion, batch_size):
 	model.eval()
+	running_loss = 0.
+	running_corrects = 0.
+
 	for i, data_batch in enumerate(dataloader):
 		val_input, val_label = data_batch
-		val_input = Variable(val_input, volatile=True)
-		val_label = Variable(val_input.type(t.LongTensor), volatile=True)
+		val_input = torch.tensor(val_input)
+		val_label = torch.tensor(val_label)
 		val_input = val_input.cuda()
 		val_label = val_label.cuda()
 
+
 		val_output = model(val_input)
 
-		_. preds = torch.max(val_output, 1)
+		_, preds = torch.max(val_output, 1)
 
 		loss = criterion(val_output, val_label)
 
 		running_loss += loss.item()
-		running_corrects += torch.sum(preds == val_label)
+		running_correct = torch.sum(preds == val_label).item()
+		# print(preds == val_label)
+		running_corrects += running_correct
+		# print(running_corrects)
 
-	epoch_loss = running_loss / len(dataloader)
-	epoch_acc = running_corrects / len(dataloader)
+	epoch_loss = running_loss / (1.0*batch_size*len(dataloader))
+	epoch_acc = running_corrects / (1.0*batch_size*len(dataloader))
 
 	return epoch_loss, epoch_acc
 
@@ -84,7 +91,7 @@ def train():
 	net = DvsCnet()
 	net.line3 = nn.Linear(4096, 2)
 	print('loading pretrained model...')
-	#model load
+	# model load
 	pretrained_dict = torch.load(args.train_load_path)
 	net_dict = net.state_dict()
 	pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in net_dict}
@@ -145,11 +152,11 @@ def train():
 
 			itr += 1
 
-		epoch_loss, epoch_acc = val_acc(net, val_dataloader, criterion)
+		epoch_loss, epoch_acc = val_acc(net, val_dataloader, criterion, batch_size=args.train_batch_size)
 
 		if epoch_acc > best_acc:
 			best_acc = epoch_acc
-			torch.save(net.state_dict(), "DVSC_{}".format(epoch))
+			torch.save(net.state_dict(), args.model_save_path + "DVSC_{}".format(epoch))
 			print("Checkpoints saved!")
 
 
@@ -158,7 +165,7 @@ def train():
 			tblogger.add_scalar('epoch_loss', epoch_loss, epoch)
 			tblogger.add_scalar('epoch_acc', epoch_acc, epoch)
 
-		print('epoch:{}''epoch_acc:{}'.format(epoch, epoch_acc))
+		print('epoch:{}'' epoch_acc:{}'' epoch_loss:{}'.format(epoch, epoch_acc, epoch_loss))
 
 
 
