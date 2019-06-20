@@ -10,3 +10,5 @@ Record the problem I had solved
 **2.一个入门级的pytorch训练二分类**
 
 **3.跑flownet时用到的脚本**
+
+**4.车牌识别分类所用的一些脚本**
