@@ -11,3 +11,5 @@ Record the code I used in the IJCAI competition
 **3.取得目标攻击赛道最优成绩的代码**
 
 **4.后续实验效果并不理想，代码待上传...**
+
+**5.部分代码可在 https://github.com/ML-Song/Attack 上查看**
