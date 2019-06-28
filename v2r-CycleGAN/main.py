@@ -172,8 +172,10 @@ def train(config):
                 real_v_np = Virtual_sample_batch.cpu().detach().numpy()*255
                 # print(real_r_np.shape, real_v_np.shape)
 
-                r_merged_image = merge_images(config, real_r_np, fake_r_np)
+                r_merged_image = merge_images(config, real_r_np, fake_r_np)   
                 v_merged_image = merge_images(config, real_v_np, fake_v_np)
+                r_sample = r_merged_image.copy()
+                v_sample = v_merged_image.copy()
                 r_merged_image = transform2tensor(r_merged_image)
                 v_merged_image = transform2tensor(v_merged_image)
                 x1 = vutils.make_grid(r_merged_image, normalize=True, scale_each=True)
@@ -183,9 +185,19 @@ def train(config):
                 tb_logger.add_image('v_Imgs', x2, step+1)
                 # print(r_merged_image.shape, v_merged_image.shape)
                 # save sample
-                # cv2.imwrite(os.path.join(config.sample_path, 'r_sample_{}.png'.format(str(step+1).zfill(5))), r_merged_image)
-                # cv2.imwrite(os.path.join(config.sample_path, 'v_sample_{}.png'.format(str(step+1).zfill(5))), v_merged_image)
 
+            if (step+1) % config.save_step == 0:
+                Gv2r_path = os.path.join(config.model_path, 'Gv2r-{}.pkl'.format(step+1))
+                Gr2v_path = os.path.join(config.model_path, 'Gr2v-{}.pkl'.format(step+1))
+                Dr_path = os.path.join(config.model_path, 'Dr-{}.pkl'.format(step+1))
+                Dv_path = os.path.join(config.model_path, 'Dv-{}.pkl'.format(step+1))
+                torch.save(Gv2r.state_dict(), Gv2r_path)
+                torch.save(Gr2v.state_dict(), Gr2v_path)
+                torch.save(Dr.state_dict(), Dr_path)
+                torch.save(Dv.state_dict(), Dv_path)
+
+                cv2.imwrite(os.path.join(config.sample_path, 'r_sample_{}.png'.format(str(step+1).zfill(5))), cv2.cvtColor(r_sample,cv2.COLOR_BGR2RGB))
+                cv2.imwrite(os.path.join(config.sample_path, 'v_sample_{}.png'.format(str(step+1).zfill(5))), cv2.cvtColor(v_sample,cv2.COLOR_BGR2RGB))
 
         #     r_np_data = r_batch_data.cpu().detach().numpy()
         #     v_np_data = v_batch_data.cpu().detach().numpy()
@@ -205,7 +217,7 @@ if __name__ == '__main__':
     parser.add_argument('--d_conv_dim', type=int, default=64)
     
     # training hyper-parameters
-    parser.add_argument('--train_epochs', type=int, default=5000)
+    parser.add_argument('--train_epochs', type=int, default=500)
     parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--lr', type=float, default=0.0002)
@@ -216,9 +228,10 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, default='./models')
     parser.add_argument('--sample_path', type=str, default='./samples')
     parser.add_argument('--real_path', type=str, default='/data1/jinlukang/LPR/real_train_im.npy')
-    parser.add_argument('--virtual_path', type=str, default='/data1/jinlukang/LPR/all_car_recorder_train_im.npy')
+    parser.add_argument('--virtual_path', type=str, default='/data1/jinlukang/LPR/train_without_night_im.npy')
     parser.add_argument('--log_step', type=int , default=10)
-    parser.add_argument('--sample_step', type=int , default=50)
+    parser.add_argument('--sample_step', type=int , default=200)
+    parser.add_argument('--save_step', type=int , default=5000)
 
     config = parser.parse_args()
     print(config)
