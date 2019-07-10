@@ -4,6 +4,8 @@ from torchvision import transforms
 import numpy as np
 import cv2
 import os
+from torch.utils.data import DataLoader
+from DataLoader import License_Real, License_Virtual
 
 transform2tensor = transforms.Compose([
     transforms.ToTensor()
@@ -15,9 +17,10 @@ transform2pil = transforms.Compose([
 
 count_step = 2000
 
-def gen_data(model, model_path, source_path, target_path):
+def gen_data_with_single(model, model_path, source_path, target_path):
     Net = model()
     Net.cuda()
+    # Net.train()
     Net.load_state_dict(torch.load(model_path))
     source_data = np.load(source_path)
 
@@ -56,11 +59,51 @@ def gen_data(model, model_path, source_path, target_path):
     print(np_data.shape)
     np.save(os.path.join(target_path, 'train_without_night_im_fake.npy'), np_data)
 
+def gen_data_with_batch(model, model_path, source_path, split, target_path):
+    Net = model()
+    Net.cuda()
+    Net.load_state_dict(torch.load(model_path))
+    # source_data = np.load(os.path.join(source_path, split))
+    print('model loaded!')
+
+    Virtual_Dataset = License_Virtual(source_path, split)
+    Virtual_Dataloader = DataLoader(Virtual_Dataset, batch_size=128, shuffle=False, pin_memory=True, num_workers=4)
+
+    step = 0
+    np_data_list = []
+    for itr, (data_batch, _, _) in enumerate(Virtual_Dataloader):
+        data_batch = data_batch.cuda()
+        # print(data_batch)
+        out_data_batch = Net(data_batch)
+        out_data_batch = torch.clamp(out_data_batch, min=0, max=1)
+        print(out_data_batch.shape)
+        out_np_batch = out_data_batch.cpu().detach().numpy()*255
+        out_np_batch = out_np_batch.astype(np.uint8)
+
+        # print(out_np_batch)
+        for i in range(out_np_batch.shape[0]):
+            each_np_img = out_np_batch[i]
+            each_np_img = each_np_img.transpose(1, 2, 0)
+            each_np_img = cv2.resize(each_np_img, (160,50), interpolation=cv2.INTER_CUBIC)
+            # print(each_np_img.shape)
+            if step % count_step == 0:
+                cv2.imwrite(os.path.join(target_path, '{}.png'.format(str(step).zfill(5))), cv2.cvtColor(each_np_img,cv2.COLOR_BGR2RGB))
+            step += 1
+            np_data_list.append(each_np_img)
+        # print(len(out_np_list[0][1]))
+
+    np_data = np.array(np_data_list)
+    print('the out np file shape is {}'.format(np_data.shape))
+    np.save(os.path.join(target_path, 'angle0_without_night_im.npy'), np_data)
+
+
+
 
 
 
 if __name__ == '__main__':
-    model_path = '/home/jinlukang/DailyIssues/issue-Notebook/v2r-CycleGAN/models/Gv2r-5000.pkl'
-    source_path = '/data1/jinlukang/LPR/train_without_night_im.npy'
+    model_path = '/home/jinlukang/DailyIssues/issue-Notebook/v2r-CycleGAN/models/seg1e-2_angle0_halfcycle/Gv2r-seg1e-2_angle0_halfcycle-5000.pkl'
+    source_path = '/data1/jinlukang/LPR/'
+    split = 'angle0_without_night'
     target_path = '/home/jinlukang/DailyIssues/issue-Notebook/v2r-CycleGAN/gen_data'
-    gen_data(G21, model_path, source_path, target_path)
+    gen_data_with_batch(G21, model_path, source_path, split, target_path)

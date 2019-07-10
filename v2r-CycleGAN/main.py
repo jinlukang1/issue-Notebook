@@ -11,6 +11,10 @@ from DataLoader import License_Real, License_Virtual
 from tensorboardX import SummaryWriter
 from model import G12, G21
 from model import D1, D2
+from LPR.metrics import runningScore
+from LPR.build_BiSeNet import BiSeNet
+import torch.nn.functional as F
+
 
 transform2tensor = transforms.Compose([
     transforms.ToTensor()
@@ -19,6 +23,14 @@ transform2tensor = transforms.Compose([
 transform2pil = transforms.Compose([
     transforms.ToPILImage()
     ])
+
+SEED = 1
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
+# random.seed(SEED)
+np.random.seed(SEED)
+
+exp_name = 'angle0_origin'
 
 def merge_images(config, sources, targets):
     _, _, h, w = sources.shape
@@ -47,10 +59,10 @@ def train(config):
         os.makedirs(config.sample_path)
 
     #load data
-    Real_Dataset = License_Real(config.real_path)
+    Real_Dataset = License_Real(config.real_path, 'real_train')
     Real_Dataloader = DataLoader(Real_Dataset, batch_size=config.batch_size, shuffle=True, pin_memory=True, num_workers=config.num_workers)
 
-    Virtual_Dataset = License_Virtual(config.virtual_path)
+    Virtual_Dataset = License_Virtual(config.virtual_path, 'angle0_without_night')
     Virtual_Dataloader = DataLoader(Virtual_Dataset, batch_size=config.batch_size, shuffle=True, pin_memory=True, num_workers=config.num_workers)
 
     #model and optim
@@ -58,6 +70,16 @@ def train(config):
     Gr2v = G21(conv_dim=config.g_conv_dim)
     Dv = D1(conv_dim=config.d_conv_dim)
     Dr = D2(conv_dim=config.d_conv_dim)
+    Gv2r.train()
+    Gr2v.train()
+    Dv.train()
+    Dr.train()
+
+    seg_model = BiSeNet(66, 8, 'resnet101')
+    seg_model = torch.nn.DataParallel(seg_model).cuda()
+    seg_model.module.load_state_dict(torch.load(config.seg_model_path), True)
+    seg_model.eval()
+    print('seg model loaded!')
 
     g_params = list(Gv2r.parameters()) + list(Gr2v.parameters())
     d_params = list(Dv.parameters()) + list(Dr.parameters())
@@ -71,26 +93,33 @@ def train(config):
         Dv.cuda()
         Dr.cuda()
 
+    #sample
     Real_iter = iter(Real_Dataloader)
     Virtual_iter = iter(Virtual_Dataloader)
 
     Real_sample_batch = Real_iter.next()
-    Virtual_sample_batch = Virtual_iter.next()
+    Virtual_sample_batch, _, _ = Virtual_iter.next()
 
     Real_sample_batch = Real_sample_batch.cuda()
     Virtual_sample_batch = Virtual_sample_batch.cuda()
     # print(Real_sample_batch.shape)
-    #train
-    step = 0
 
-    tb_logger = SummaryWriter('./logs')
+    #train & criterion
+    step = 0
+    criterion = torch.nn.CrossEntropyLoss(ignore_index=255)
+
+    tb_logger = SummaryWriter('./logs/{}'.format(exp_name))
 
     for each_epoch in range(config.train_epochs):
-        for itr, (r_batch_data, v_batch_data) in enumerate(zip(Real_Dataloader, Virtual_Dataloader)):
+        for itr, (r_batch_data, (v_batch_data, v_batch_seg, v_batch_pos)) in enumerate(zip(Real_Dataloader, Virtual_Dataloader)):
             #============ train D ============#
             # train with real images
             r_batch_data = r_batch_data.cuda()
+            # r_batch_seg = r_batch_seg.cuda()
+            # r_batch_seg = torch.squeeze(r_batch_seg, 1)
             v_batch_data = v_batch_data.cuda()
+            v_batch_seg = v_batch_seg.cuda()
+            v_batch_seg = torch.squeeze(v_batch_seg, 1)
             # print(r_batch_data.shape)
 
             g_optimizer.zero_grad()
@@ -103,8 +132,9 @@ def train(config):
             dv_loss = torch.mean((out-1)**2)
 
             d_real_loss = dr_loss + dv_loss
-            d_real_loss.backward()
-            d_optimizer.step()
+            if step % config.D_up_step == 0:
+                d_real_loss.backward()
+                d_optimizer.step()
 
             # train with fake images
             g_optimizer.zero_grad()
@@ -121,8 +151,9 @@ def train(config):
             dr_loss = torch.mean(out**2)
 
             d_fake_loss = dv_loss + dr_loss
-            d_fake_loss.backward()
-            d_optimizer.step()
+            if step % config.D_up_step == 0:
+                d_fake_loss.backward()
+                d_optimizer.step()
 
             #============ train G ============#
             # train r-v-r cycle
@@ -132,9 +163,12 @@ def train(config):
             fake_v = Gr2v(r_batch_data)
             out = Dv(fake_v)
             reconst_r = Gv2r(fake_v)
+            # seg_pred, _ = seg_model(F.interpolate(reconst_r, size=(50, 160)))
+            # r_seg_loss = criterion(seg_pred, r_batch_seg.type(torch.long))
+
             # print(reconst_r.shape)
 
-            g_loss = torch.mean((out-1)**2) + torch.mean((r_batch_data - reconst_r)**2)
+            g_loss = torch.mean((out-1)**2) + torch.mean((r_batch_data - reconst_r)**2)# + 1.0*r_seg_loss
             g_loss.backward()
             g_optimizer.step()
 
@@ -145,8 +179,10 @@ def train(config):
             fake_r = Gv2r(v_batch_data)
             out = Dr(fake_r)
             reconst_v = Gr2v(fake_r)
+            # seg_pred, _ = seg_model(F.interpolate(reconst_v, size=(50, 160), mode='bilinear'))
+            v_seg_loss = 0#criterion(seg_pred, v_batch_seg.type(torch.long))
 
-            g_loss = torch.mean((out-1)**2) + torch.mean((v_batch_data - reconst_v)**2)
+            g_loss = torch.mean((out-1)**2) + torch.mean((v_batch_data - reconst_v)**2)# + 0.01*v_seg_loss
             g_loss.backward()
             g_optimizer.step()
 
@@ -156,9 +192,11 @@ def train(config):
             tb_logger.add_scalar('g_loss', g_loss, step)
             tb_logger.add_scalar('dv_loss', dv_loss, step)
             tb_logger.add_scalar('dr_loss', dr_loss, step)
+            # tb_logger.add_scalar('r_seg_loss', r_seg_loss, step)
+            tb_logger.add_scalar('v_seg_loss', v_seg_loss, step)
 
-            print('step:{}, d_real_loss:{}, d_fake_loss:{}, g_loss:{}, dv_loss:{}, dr_loss:{}'.format(
-                step, d_real_loss, d_fake_loss, g_loss, dv_loss, dr_loss))
+            print('step:{}, d_real_loss:{}, d_fake_loss:{}, g_loss:{}, dv_loss:{}, dr_loss:{}, v_seg_loss:{}'.format(
+                step, d_real_loss, d_fake_loss, g_loss, dv_loss, dr_loss, v_seg_loss))
 
             #save the sampled image
             if (step+1) % config.sample_step == 0:
@@ -187,10 +225,10 @@ def train(config):
                 # save sample
 
             if (step+1) % config.save_step == 0:
-                Gv2r_path = os.path.join(config.model_path, 'Gv2r-{}.pkl'.format(step+1))
-                Gr2v_path = os.path.join(config.model_path, 'Gr2v-{}.pkl'.format(step+1))
-                Dr_path = os.path.join(config.model_path, 'Dr-{}.pkl'.format(step+1))
-                Dv_path = os.path.join(config.model_path, 'Dv-{}.pkl'.format(step+1))
+                Gv2r_path = os.path.join(config.model_path, 'Gv2r-{}-{}.pkl'.format(exp_name, step+1))
+                Gr2v_path = os.path.join(config.model_path, 'Gr2v-{}-{}.pkl'.format(exp_name, step+1))
+                Dr_path = os.path.join(config.model_path, 'Dr-{}-{}.pkl'.format(exp_name, step+1))
+                Dv_path = os.path.join(config.model_path, 'Dv-{}-{}.pkl'.format(exp_name, step+1))
                 torch.save(Gv2r.state_dict(), Gv2r_path)
                 torch.save(Gr2v.state_dict(), Gr2v_path)
                 torch.save(Dr.state_dict(), Dr_path)
@@ -218,20 +256,22 @@ if __name__ == '__main__':
     
     # training hyper-parameters
     parser.add_argument('--train_epochs', type=int, default=500)
-    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--lr', type=float, default=0.0002)
     parser.add_argument('--beta1', type=float, default=0.5)
     parser.add_argument('--beta2', type=float, default=0.999)
     
     # misc
-    parser.add_argument('--model_path', type=str, default='./models')
-    parser.add_argument('--sample_path', type=str, default='./samples')
-    parser.add_argument('--real_path', type=str, default='/data1/jinlukang/LPR/real_train_im.npy')
-    parser.add_argument('--virtual_path', type=str, default='/data1/jinlukang/LPR/train_without_night_im.npy')
+    parser.add_argument('--model_path', type=str, default='./models/{}'.format(exp_name))
+    parser.add_argument('--sample_path', type=str, default='./samples/{}'.format(exp_name))
+    parser.add_argument('--real_path', type=str, default='/data1/jinlukang/LPR')
+    parser.add_argument('--virtual_path', type=str, default='/data1/jinlukang/LPR')
+    parser.add_argument('--seg_model_path', type=str, default='/home/jinlukang/DailyIssues/issue-Notebook/v2r-CycleGAN/pretrained/best.pth')
     parser.add_argument('--log_step', type=int , default=10)
-    parser.add_argument('--sample_step', type=int , default=200)
-    parser.add_argument('--save_step', type=int , default=5000)
+    parser.add_argument('--sample_step', type=int , default=500)
+    parser.add_argument('--D_up_step', type=int , default=1)
+    parser.add_argument('--save_step', type=int , default=2500)
 
     config = parser.parse_args()
     print(config)
