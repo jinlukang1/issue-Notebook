@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
 
 
-    error_path = 'error/pos_else'
+    error_path = 'error/pos_one'
     img_list = glob.glob(os.path.join(error_path,'*im.png'))
     img_list.sort()
     for index, each_img in enumerate(img_list):
@@ -125,9 +125,9 @@ if __name__ == '__main__':
 
 
         show_img = vtitch
-        cv2.namedWindow('image')
+        # cv2.namedWindow('image')
         show_img = cv2.cvtColor(show_img, cv2.COLOR_BGR2RGB)
-        cv2.imshow('image',show_img)
-        cv2.imwrite(os.path.join('show_img/pos_else',str(index).zfill(5)+".png"), show_img)
-        cv2.waitKey(1000)
-    cv2.destroyAllWindows()
+        # cv2.imshow('image',show_img)
+        cv2.imwrite(os.path.join('show_img/pos_one',str(index).zfill(5)+".png"), show_img)
+        # cv2.waitKey(0)
+    # cv2.destroyAllWindows()

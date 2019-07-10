@@ -11,12 +11,12 @@ class random_noise(object):
     def __init__(self):
        self.noise = 1
 
-    def __call__(self, im, gt):
+    def __call__(self, im, gt, pos):
         im = im.copy()
 
         # im = self.gauss_noise(im)#有问题
         im = self.salt_and_pepper_noise(im)
-        return im, gt
+        return im, gt, pos
 
     def gauss_noise(self, image, mean=0, var=0.001):
         '''
@@ -55,14 +55,14 @@ class random_noise(object):
 class random_contrast(object):
     def __init__(self, threhold):
         self.threhold = threhold
-    def __call__(self, np_img, gt):
+    def __call__(self, np_img, gt, pos):
         contrast = self.threhold
         # print(contrast)
         mean = np.mean(np_img.copy())
         np_img = np_img - mean
         np_img = np.clip(np_img + mean*contrast, 0, 255)
         np_img = np_img.astype(np.uint8)
-        return np_img, gt
+        return np_img, gt, pos
 
 
 #高斯模糊
@@ -71,17 +71,17 @@ class gaussian_blurry(object):
         self.sigemaX = sigemaX
         self.sigemaY = sigemaY
         self.ksize = ksize
-    def __call__(self, np_img, gt):
+    def __call__(self, np_img, gt, pos):
         blur_img = np_img.copy()
         blur_img = cv2.GaussianBlur(blur_img, ksize = self.ksize, sigmaX = self.sigemaX, sigmaY = self.sigemaY)
-        return blur_img, gt
+        return blur_img, gt, pos
 
 #运动模糊
 class motion_blurry(object):
     def __init__(self, degree=12, angle=45):
         self.degree = degree
         self.angle = angle
-    def __call__(self, np_img, gt):
+    def __call__(self, np_img, gt, pos):
         M = cv2.getRotationMatrix2D((self.degree / 2, self.degree / 2), self.angle, 1)
         motion_blur_kernel = np.diag(np.ones(self.degree))
         motion_blur_kernel = cv2.warpAffine(motion_blur_kernel, M, (self.degree, self.degree))
@@ -91,7 +91,7 @@ class motion_blurry(object):
         cv2.normalize(blur_img, blur_img, 0, 255, cv2.NORM_MINMAX)
         blur_img = np.array(blur_img, dtype=np.uint8)
 
-        return blur_img, gt
+        return blur_img, gt, pos
 
 
 
@@ -99,7 +99,7 @@ class motion_blurry(object):
 class random_occlusion(object):
     def __init__(self, threhold):
         self.threhold = threhold
-    def __call__(self, np_img, gt):
+    def __call__(self, np_img, gt, pos):
         occ_img = np_img.copy()
         num = self.threhold
         height, width = occ_img.shape[0], occ_img.shape[1]
@@ -110,23 +110,23 @@ class random_occlusion(object):
             for j in range(10):
                 for k in range(10):
                     occ_img[h+k, w+j] = color
-        return occ_img, gt
+        return occ_img, gt, pos
 
 #亮度
 class random_bright(object):
     def __init__(self, threhold):
         self.threhold = threhold
-    def __call__(self, np_img, gt):
+    def __call__(self, np_img, gt, pos):
         bright = self.threhold
         np_img = np.clip(np_img.copy() * bright, 0, 255)
         np_img = np_img.astype(np.uint8)
-        return np_img, gt
+        return np_img, gt, pos
 
 class ori(object):
     def __init__(self, threhold=0):
         self.threhold = threhold
-    def __call__(self, np_img, gt):
-        return np_img, gt
+    def __call__(self, np_img, gt, pos):
+        return np_img, gt, pos
 
 #显示图片       
 def show_img(np_img):
@@ -138,56 +138,99 @@ def show_img(np_img):
     cv2.waitKey (0)
     cv2.destroyAllWindows()
 
+class random_crop(object):
+    def __init__(self, threhold=8):
+        self.threhold = threhold
+    def __call__(self, np_img, gt, pos):
+        crop = random.randint(3,self.threhold)#左闭右闭
+        select = random.randint(1,4)
+        h,w,c = np_img.shape
+        if select == 1:
+            np_img = np_img[:,crop:,:]
+            gt = gt[:,crop:]
+            pos = pos[:,crop:]
+            np_img = cv2.resize(np_img, (w, h), interpolation=cv2.INTER_CUBIC)
+            gt = cv2.resize(gt, (w, h), interpolation=cv2.INTER_NEAREST)
+            pos = cv2.resize(pos, (w, h), interpolation=cv2.INTER_NEAREST)
+        elif select == 2:
+            np_img = np_img[crop:,:,:]
+            gt = gt[crop:,:]
+            pos = pos[crop:,:]
+            np_img = cv2.resize(np_img, (w, h), interpolation=cv2.INTER_CUBIC)
+            gt = cv2.resize(gt, (w, h), interpolation=cv2.INTER_NEAREST)
+            pos = cv2.resize(pos, (w, h), interpolation=cv2.INTER_NEAREST)
+        elif select == 3:
+            np_img = np_img[:,:-crop,:]
+            gt = gt[:,:-crop]
+            pos = pos[:,:-crop]
+            np_img = cv2.resize(np_img, (w, h), interpolation=cv2.INTER_CUBIC)
+            gt = cv2.resize(gt, (w, h), interpolation=cv2.INTER_NEAREST)
+            pos = cv2.resize(pos, (w, h), interpolation=cv2.INTER_NEAREST)
+        elif select == 4:
+            np_img = np_img[:-crop,:,:]
+            gt = gt[:-crop,:]
+            pos = pos[:-crop,:]
+            np_img = cv2.resize(np_img, (w, h), interpolation=cv2.INTER_CUBIC)
+            gt = cv2.resize(gt, (w, h), interpolation=cv2.INTER_NEAREST)
+            pos = cv2.resize(pos, (w, h), interpolation=cv2.INTER_NEAREST)
+        else:
+            return np_img, gt, pos
+        return np_img, gt, pos
 
 if __name__ == '__main__':
-    npy_data_img = 'npy_data/all/all_car_recorder_val_im.npy'
-    npy_data_char = 'npy_data/all/all_car_recorder_val_char.npy'
-    npy_data_pos = 'npy_data/all/all_car_recorder_val_pos.npy'
-    npy_data_gt = 'npy_data/all/all_car_recorder_val_gt.npy'
+    npy_data_img = r'C:\Users\Administrator\Desktop\vLPR experiment\npy_data\without_night/train_without_night_im.npy'
+    npy_data_char = r'C:\Users\Administrator\Desktop\vLPR experiment\npy_data\without_night/train_without_night_char.npy'
+    npy_data_pos = r'C:\Users\Administrator\Desktop\vLPR experiment\npy_data\without_night/train_without_night_pos.npy'
+    npy_data_gt = r'C:\Users\Administrator\Desktop\vLPR experiment\npy_data\without_night/train_without_night_gt.npy'
     np_imgs = np.load(npy_data_img)
     np_gts = np.load(npy_data_gt)
     np_chars = np.load(npy_data_char)
     np_poses = np.load(npy_data_pos)
+    
+    test_index = 10
 
-    np_test_img = np_imgs[5000]
-    np_test_gt = np_gts[10000]
+    np_test_img = np_imgs[test_index]
+    np_test_gt = np_gts[test_index]
+    np_test_pos = np_poses[test_index]
 
-    out_im = np.zeros([np_imgs.shape[0]*7, 50, 160, 3], dtype=np.uint8)
-    out_gt = np.zeros([np_imgs.shape[0]*7, 50, 160], dtype=np.uint8)
-    out_pos = np.zeros([np_imgs.shape[0]*7, 50, 160], dtype=np.uint8)
-    out_char = np.zeros([np_imgs.shape[0]*7, 1, 7], dtype=np.uint8)
+    
 
-    for i in tqdm(range(np_imgs.shape[0])):
-        # numpy.random.seed(5)
-        each_np_img = np_imgs[i]
-        each_np_gt = np_gts[i]
-        each_np_char = np_chars[i]
-        each_np_pos = np_poses[i]
-        data_orim = ori()
-        data_bright = random_bright(threhold=3*np.random.rand())
-        data_contrast = random_contrast(threhold=2*np.random.rand())
-        data_noise = random_noise()
-        data_occlusion = random_occlusion(threhold=random.randint(1,9))
-        random_ksize = (random.randint(2,18) // 4) * 2 + 1
-        data_gaussblur = gaussian_blurry(ksize = (random_ksize,random_ksize), sigemaX=0, sigemaY=0)
-        data_motionblur = motion_blurry(degree=random.randint(1,9), angle=random.randint(0,90))
-        data_transforms = [data_orim, data_bright, data_contrast, data_noise, data_occlusion, data_gaussblur, data_motionblur]
-        # print(each_np_img.shape)
-        for index, each_transform in enumerate(data_transforms):
-            trans_data, _ = each_transform(each_np_img, each_np_gt)
-            # show_img(trans_data)
-            out_im[i*7+index, :, :, :] = trans_data
-            out_gt[i*7+index, :, :] = each_np_gt
-            out_pos[i*7+index, :, :] = each_np_pos
-            out_char[i*7+index] = each_np_char
+    # out_im = np.zeros([np_imgs.shape[0]*7, 50, 160, 3], dtype=np.uint8)
+    # out_gt = np.zeros([np_imgs.shape[0]*7, 50, 160], dtype=np.uint8)
+    # out_pos = np.zeros([np_imgs.shape[0]*7, 50, 160], dtype=np.uint8)
+    # out_char = np.zeros([np_imgs.shape[0]*7, 1, 7], dtype=np.uint8)
 
-    print('im:{}, gt:{}, pos:{}, char:{}'.format(out_im.shape, out_gt.shape, out_pos.shape, out_char.shape))
-    out_path = 'npy_data_with_aug'
-    data_type = 'all_car_recorder_with_aug_val'
-    np.save(os.path.join(out_path, data_type + '_im.npy'), out_im)
-    np.save(os.path.join(out_path, data_type + '_gt.npy'), out_gt)
-    np.save(os.path.join(out_path, data_type + '_pos.npy'), out_pos)
-    np.save(os.path.join(out_path, data_type + '_char.npy'), out_char)
+    # for i in tqdm(range(np_imgs.shape[0])):
+    #     # numpy.random.seed(5)
+    #     each_np_img = np_imgs[i]
+    #     each_np_gt = np_gts[i]
+    #     each_np_char = np_chars[i]
+    #     each_np_pos = np_poses[i]
+    #     data_orim = ori()
+    #     data_bright = random_bright(threhold=3*np.random.rand())
+    #     data_contrast = random_contrast(threhold=2*np.random.rand())
+    #     data_noise = random_noise()
+    #     data_occlusion = random_occlusion(threhold=random.randint(1,9))
+    #     random_ksize = (random.randint(2,18) // 4) * 2 + 1
+    #     data_gaussblur = gaussian_blurry(ksize = (random_ksize,random_ksize), sigemaX=0, sigemaY=0)
+    #     data_motionblur = motion_blurry(degree=random.randint(1,8), angle=random.randint(0,90))
+    #     data_transforms = [data_orim, data_bright, data_contrast, data_noise, data_occlusion, data_gaussblur, data_motionblur]
+    #     # print(each_np_img.shape)
+    #     for index, each_transform in enumerate(data_transforms):
+    #         trans_data, _ = each_transform(each_np_img, each_np_gt)
+    #         # show_img(trans_data)
+    #         out_im[i*7+index, :, :, :] = trans_data
+    #         out_gt[i*7+index, :, :] = each_np_gt
+    #         out_pos[i*7+index, :, :] = each_np_pos
+    #         out_char[i*7+index] = each_np_char
+
+    # print('im:{}, gt:{}, pos:{}, char:{}'.format(out_im.shape, out_gt.shape, out_pos.shape, out_char.shape))
+    # out_path = 'npy_data_with_aug'
+    # data_type = 'all_car_recorder_with_aug_val'
+    # np.save(os.path.join(out_path, data_type + '_im.npy'), out_im)
+    # np.save(os.path.join(out_path, data_type + '_gt.npy'), out_gt)
+    # np.save(os.path.join(out_path, data_type + '_pos.npy'), out_pos)
+    # np.save(os.path.join(out_path, data_type + '_char.npy'), out_char)
 
 
     # data_bright = random_bright(threhold=3*np.random.rand())
@@ -196,7 +239,7 @@ if __name__ == '__main__':
     # data_occlusion = random_occlusion(threhold=random.randint(1,9))
     # random_ksize = (random.randint(2,18) // 4) * 2 + 1
     # data_gaussblur = gaussian_blurry(ksize = (random_ksize,random_ksize), sigemaX=0, sigemaY=0)
-    # data_motionblur = motion_blurry(degree=random.randint(1,9), angle=random.randint(0,90))
+    # data_motionblur = motion_blurry(degree=random.randint(1,8), angle=random.randint(90,135))
 
     # bright_img, _ = data_bright(np_test_img, np_test_gt)
     # contrast_img, _ = data_contrast(np_test_img, np_test_gt)
@@ -205,4 +248,13 @@ if __name__ == '__main__':
     # Gblur_img, _ = data_gaussblur(np_test_img, np_test_gt)
     # Mblur_img, _ = data_motionblur(np_test_img, np_test_gt)
 
-    # show_img(bright_img)
+    data_crop = random_crop()
+    croped_img , crop_gt, croped_pos = data_crop(np_test_img, np_test_gt, np_test_pos)
+
+    crop_gt = crop_gt[:,:,np.newaxis]
+    croped_pos = croped_pos[:,:,np.newaxis]
+    gt = np.concatenate((crop_gt, crop_gt, crop_gt), axis=-1)
+    pos = np.concatenate((croped_pos, croped_pos, croped_pos), axis=-1)
+    show_im = np.vstack((gt, pos, croped_img))
+    print(show_im.shape)
+    show_img(show_im)
