@@ -11,9 +11,12 @@ import codecs
 from skimage import measure
 from collections import Counter
 from utils import makedirs
+import threading
+import time
 
-color_list = {'biaoji': [90, 210, 211], 'biaoji1': [81, 182, 61], 'biaoji_A': [143, 234, 243],
-              'biaoji_B': [166, 221, 155], 'biaoji_C': [150, 167, 255]}
+color_list = {'biaoji': [230, 198, 213], 'biaoji_A': [143, 234, 243],
+              'biaoji_B': [166, 221, 155], 'biaoji_B2': [132, 106, 235], 'biaoji_C': [150, 167, 255],
+              'biaoji_D': [163, 66, 144], 'biaoji_E': [225, 255, 226]}
 
 def prettify(elem):
     """
@@ -52,7 +55,7 @@ def sort_points(points_list):
     fin_name = None
     for points in points_list:
         [defect_color, xmin, ymin, xmax, ymax] = points
-        if (defect_color == 'biaoji') or (defect_color == 'biaoji1'):
+        if defect_color == 'biaoji' and (xmin < 1280 and xmax > 1280):
             temp_area = (xmax - xmin) * (ymax - ymin)
             if temp_area > max_area:
                 max_area = temp_area
@@ -62,6 +65,8 @@ def sort_points(points_list):
             if temp_area2 > max_area2:
                 max_area2 = temp_area2
                 fin_name = defect_color
+    if fin_name == 'biaoji_B2':
+        fin_name = 'biaoji_B'
     fin_points[0] = fin_name
     return [fin_points]
 
@@ -91,6 +96,8 @@ def GenXml(info_dict, path):
     depth = SubElement(size_part, 'depth')
     depth.text = str(info_dict['depth'])
     for each_object in info_dict['boxlist']:
+        if each_object['xmin'] == 0:
+            continue
         object_item = SubElement(top, 'object')
         name = SubElement(object_item, 'name')
         name.text = str(each_object['name'])
@@ -122,12 +129,17 @@ def CountColor(np_img):
             temp_list.append(np_img[hi, wi, 2])
     print(Counter(temp_list))
 
-def main(config):
+def label_object(threadName, config):
     makedirs(config.label_path)
     seg_pic_list = glob.glob(os.path.join(config.seg_path, '*.*[png|jpg|jpeg]'))
-    seg_pic_list = sorted(seg_pic_list)
-    print(len(seg_pic_list))
-    for each_seg_pic in tqdm.tqdm(seg_pic_list):
+    if threadName == 'Thread1':
+        reverse_set = True
+    else:
+        reverse_set = False
+    seg_pic_list = sorted(seg_pic_list, reverse=reverse_set)
+    pbar = tqdm.tqdm(seg_pic_list[:(len(seg_pic_list)//2)+1])
+    for each_seg_pic in pbar:
+        pbar.set_description('Img length : {}, Reverse : {}, Thread : {}'.format(len(seg_pic_list), reverse_set, threadName))
         each_seg_numpy = cv2.imread(each_seg_pic)
         # print(each_seg_pic)
         each_seg_numpy = cv2.cvtColor(each_seg_numpy, cv2.COLOR_BGR2RGB)
@@ -140,7 +152,6 @@ def main(config):
         temp_dict['height'] = h
         temp_dict['depth'] = c
         points_list = GetPoint(each_seg_numpy)
-        print(points_list)
         points_list = sort_points(points_list)
         for points in points_list:
             box_temp = {}
@@ -155,13 +166,32 @@ def main(config):
             # print(xmin, ymin, xmax, ymax)
             GenXml(temp_dict, config.label_path)
 
+class myThread(threading.Thread):
+    def __init__(self, threadID, name, config):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.config = config
+    def run(self):
+        print ("Thread start ：" + self.name)
+        label_object(self.name, self.config)
+        print ("Thread exit ：" + self.name)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--seg_path', type=str, default=r'.', help='The path saved the segmentation img')
-    parser.add_argument('--ori_path', type=str, default=r'.', help='The path saved the origin img')
-    parser.add_argument('--label_path', type=str, default=r'.', help='The path saved the label xml')
+    parser.add_argument('--seg_path', type=str, default=r'd:\Documents\AirSim\biaoji_A\sorted\weather0\seg', help='The path saved the segmentation img')
+    parser.add_argument('--ori_path', type=str, default=r'd:\Documents\AirSim\biaoji_A\sorted\weather0\ori', help='The path saved the origin img')
+    parser.add_argument('--label_path', type=str, default=r'd:\Documents\AirSim\biaoji_A\sorted\weather0\anno', help='The path saved the label xml')
+    # parser.add_argument('--reverse', type=bool, default=False)
 
     config = parser.parse_args()
-    main(config)
-# d:\Documents\AirSim\Timages\anno
+    thread1 = myThread(1, 'Thread1', config)
+    thread2 = myThread(2, 'Thread2', config)
+
+    thread1.start()
+    time.sleep(2)
+    thread2.start()
+    thread1.join()
+    thread2.join()
+
+    # label_object(config)
