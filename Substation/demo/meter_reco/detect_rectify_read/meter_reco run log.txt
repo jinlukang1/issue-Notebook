@@ -1,0 +1,25 @@
+/data1/jinlukang/biaoji_data_v4/biaoji_B/weather6/ori/00955.jpg
+[array([], shape=(0, 5), dtype=float32), array([[1.0990237e+03, 6.5823175e+02, 1.3748845e+03, 8.9353961e+02,
+        9.8688680e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_A/weather2/ori/01426.jpg
+[array([[1.0591167e+03, 4.6786816e+02, 1.5009733e+03, 8.8508307e+02,
+        8.0873877e-01]], dtype=float32), array([[1.0650570e+03, 4.7715067e+02, 1.4986089e+03, 8.8126807e+02,
+        9.5414095e-02]], dtype=float32), array([[1.0632222e+03, 4.6907352e+02, 1.4915872e+03, 8.7744818e+02,
+        5.1917113e-02]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.0625953e+03, 4.6858466e+02, 1.4938590e+03, 8.7926056e+02,
+        1.5527956e-01]], dtype=float32)]
+gt meter type = 0, pred meter type = 0
+gt meter reading = 0.726, pred meter reading = 0.759
+
+[array([[1.0687139e+03, 4.3389102e+02, 1.5304742e+03, 7.8188293e+02,
+        1.5429629e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.0664059e+03, 4.1200928e+02, 1.5576122e+03, 7.6263446e+02,
+        5.1961932e-02]], dtype=float32), array([[1.0766125e+03, 4.1795132e+02, 1.5621597e+03, 7.8266553e+02,
+        9.9686265e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.0641743e+03, 4.1807794e+02, 1.5555352e+03, 7.6274121e+02,
+        6.7558780e-02]], dtype=float32), array([[1.0724235e+03, 4.1583334e+02, 1.5622278e+03, 7.8317291e+02,
+        9.9644452e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.0641743e+03, 4.1807794e+02, 1.5555352e+03, 7.6274121e+02,
+        6.7558780e-02]], dtype=float32), array([[1.0724235e+03, 4.1583334e+02, 1.5622278e+03, 7.8317291e+02,
+        9.9644452e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.0641743e+03, 4.1807794e+02, 1.5555352e+03, 7.6274121e+02,
+        6.7558780e-02]], dtype=float32), array([[1.0724235e+03, 4.1583334e+02, 1.5622278e+03, 7.8317291e+02,
+        9.9644452e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]

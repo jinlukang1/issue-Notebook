@@ -1,0 +1,147 @@
+im_name = /data1/jinlukang/biaoji_data_v4/biaoji_A/weather8/ori/00191.jpg
+[array([[1.2457677e+03, 6.9504889e+02, 1.3021880e+03, 7.5202948e+02,
+        9.9582362e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 0, pred meter type = 0
+gt meter reading = 0.991, pred meter reading = 0.993
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather2/ori/00538.jpg
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather7/ori/00084.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2482626e+03, 6.8374915e+02, 1.3161193e+03, 7.5988086e+02,
+        9.9810082e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 3, pred meter type = 3
+gt meter reading = 0.760, pred meter reading = 0.468
+/data1/jinlukang/biaoji_data_v4/biaoji_B/weather2/ori/01351.jpg
+[array([], shape=(0, 5), dtype=float32), array([[1.2407231e+03, 6.5194128e+02, 1.3269498e+03, 7.1743164e+02,
+        9.8811996e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2438051e+03, 6.5359955e+02, 1.3229225e+03, 7.1783521e+02,
+        5.6820564e-02]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 1, pred meter type = 1
+gt meter reading = 0.840, pred meter reading = 1.726
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather2/ori/01845.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2156857e+03, 6.3871747e+02, 1.3618347e+03, 8.0701654e+02,
+        9.9773633e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 3, pred meter type = 3
+gt meter reading = 0.320, pred meter reading = -0.036
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather6/ori/01322.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2402701e+03, 6.7318256e+02, 1.3289435e+03, 7.7588513e+02,
+        9.9725926e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 3, pred meter type = 3
+gt meter reading = 0.240, pred meter reading = 0.219
+
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather6/ori/01130.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2189653e+03, 6.5886951e+02, 1.3302416e+03, 7.9127661e+02,
+        9.9852896e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 3, pred meter type = 3
+gt meter reading = 0.890, pred meter reading = 0.348
+
+/data1/jinlukang/biaoji_data_v4/biaoji_B/weather3/ori/00660.jpg
+[array([], shape=(0, 5), dtype=float32), array([[1.2666719e+03, 6.6672296e+02, 1.3268141e+03, 7.2643518e+02,
+        9.8742896e-01],
+       [2.3596045e+02, 5.1806024e+02, 3.4724579e+02, 5.8997101e+02,
+        5.6597775e-01]], dtype=float32), array([[2.3539258e+02, 5.1543628e+02, 3.4769653e+02, 5.8670404e+02,
+        1.7675371e-01]], dtype=float32), array([[2.4015953e+02, 5.1729230e+02, 3.4570093e+02, 5.9156561e+02,
+        5.0092053e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_B/weather4/ori/00666.jpg
+[array([], shape=(0, 5), dtype=float32), array([[1.1185342e+03, 5.7063806e+02, 1.4119672e+03, 8.5764764e+02,
+        9.9578130e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_E/weather5/ori/00365.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2266729e+03, 6.6812878e+02, 1.3323492e+03, 7.6505151e+02,
+        9.9620795e-01]], dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_B/weather5/ori/01359.jpg
+[array([], shape=(0, 5), dtype=float32), array([[1.2509790e+03, 6.9748541e+02, 1.3251190e+03, 7.6361676e+02,
+        9.8841131e-01],
+       [1.5108148e+02, 7.7755029e+02, 2.4701981e+02, 8.5279877e+02,
+        9.7633708e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather5/ori/01041.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2174846e+03, 6.5798108e+02, 1.3326647e+03, 7.8589612e+02,
+        9.9743348e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_A/weather7/ori/01802.jpg
+[array([[1.2435930e+03, 6.7996338e+02, 1.3145909e+03, 7.5186884e+02,
+        9.9853885e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather7/ori/01355.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.1951732e+03, 6.5830914e+02, 1.3591318e+03, 8.0505762e+02,
+        9.9752134e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_E/weather6/ori/00013.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[8.8772357e+02, 3.2689612e+02, 1.6588812e+03, 9.5468652e+02,
+        7.3594265e-02]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([[8.7036096e+02, 3.1397009e+02, 1.6783550e+03, 9.8773279e+02,
+        9.8418266e-01]], dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather7/ori/01659.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.1965590e+03, 6.4187927e+02, 1.3503241e+03, 8.1356323e+02,
+        9.9843341e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 3, pred meter type = 3
+gt meter reading = -0.080, pred meter reading = -0.063
+
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather5/ori/01790.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2409106e+03, 6.8350061e+02, 1.3197764e+03, 7.6312848e+02,
+        9.9839729e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 3, pred meter type = 3
+gt meter reading = 0.280, pred meter reading = 0.411
+
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather3/ori/01424.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2171404e+03, 6.3463116e+02, 1.3601460e+03, 8.0895935e+02,
+        9.9736243e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_E/weather4/ori/00679.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2330854e+03, 6.7045471e+02, 1.3266542e+03, 7.6100739e+02,
+        9.9077964e-01]], dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_E/weather4/ori/01335.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.1083402e+03, 4.7035696e+02, 1.4646472e+03, 8.7885901e+02,
+        9.9851853e-01]], dtype=float32)]
+gt meter type = 4, pred meter type = 4
+gt meter reading = 1.830, pred meter reading = 1.882
+
+/data1/jinlukang/biaoji_data_v4/biaoji_B/weather2/ori/01266.jpg
+[array([], shape=(0, 5), dtype=float32), array([[1.0474956e+03, 2.7596133e+02, 1.6868213e+03, 9.0347675e+02,
+        9.9769884e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 1, pred meter type = 1
+gt meter reading = 1.500, pred meter reading = 1.547
+
+/data1/jinlukang/biaoji_data_v4/biaoji_B/weather0/ori/00953.jpg
+[array([], shape=(0, 5), dtype=float32), array([[1.1473347e+03, 5.5436957e+02, 1.4416785e+03, 8.4157178e+02,
+        9.9667954e-01]], dtype=float32), array([[2.3462185e+03, 6.1182025e+02, 2.4152451e+03, 6.4973804e+02,
+        5.4281760e-02]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 1, pred meter type = 1
+gt meter reading = 1.620, pred meter reading = 2.436
+
+/data1/jinlukang/biaoji_data_v4/biaoji_E/weather6/ori/00681.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.0969266e+03, 5.0000171e+02, 1.4130267e+03, 8.5413446e+02,
+        9.9366319e-01]], dtype=float32)]
+gt meter type = 4, pred meter type = 4
+gt meter reading = 0.300, pred meter reading = 1.200
+
+/data1/jinlukang/biaoji_data_v4/biaoji_A/weather0/ori/00885.jpg
+[array([[1.2299702e+03, 6.5602563e+02, 1.3330780e+03, 7.5477472e+02,
+        9.9850851e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_A/weather5/ori/00395.jpg
+/data1/jinlukang/biaoji_data_v4/biaoji_E/weather8/ori/01373.jpg
+/data1/jinlukang/biaoji_data_v4/biaoji_E/weather8/ori/01190.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2144956e+03, 6.5827991e+02, 1.3247517e+03, 7.7339526e+02,
+        9.9587470e-01]], dtype=float32)]
+gt meter type = 4, pred meter type = 4
+gt meter reading = 0.360, pred meter reading = 1.751
+
+/data1/jinlukang/biaoji_data_v4/biaoji_E/weather2/ori/00172.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[6.6375677e+02, 5.4032715e+02, 7.4990680e+02, 6.0777313e+02,
+        4.8704174e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.1064872e+03, 4.7273502e+02, 1.4701942e+03, 8.8612445e+02,
+        9.9762565e-01]], dtype=float32)]
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather6/ori/00642.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2155034e+03, 6.5716443e+02, 1.3346824e+03, 7.8710333e+02,
+        9.9633586e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 3, pred meter type = 3
+gt meter reading = 0.640, pred meter reading = 0.252
+
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather4/ori/00825.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2055771e+03, 6.4497363e+02, 1.3634684e+03, 8.1381494e+02,
+        9.9778855e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 3, pred meter type = 3
+gt meter reading = 0.290, pred meter reading = 0.184
+
+/data1/jinlukang/biaoji_data_v4/biaoji_D/weather3/ori/01331.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.2450140e+03, 6.8133685e+02, 1.3189736e+03, 7.6341138e+02,
+        9.9706620e-01]], dtype=float32), array([], shape=(0, 5), dtype=float32)]
+gt meter type = 3, pred meter type = 3
+gt meter reading = -0.100, pred meter reading = 0.389
+
+/data1/jinlukang/biaoji_data_v4/biaoji_E/weather0/ori/01626.jpg
+[array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([], shape=(0, 5), dtype=float32), array([[1.0905385e+03, 4.9293124e+02, 1.4342056e+03, 8.5576898e+02,
+        9.9642581e-01]], dtype=float32)]
+gt meter type = 4, pred meter type = 4
+gt meter reading = 1.440, pred meter reading = 1.340
+
